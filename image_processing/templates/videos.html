@@ -1,0 +1,103 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Video Processing</title>
+</head>
+
+<body>
+
+    <h1>Video Processing</h1>
+
+    <form id="videoForm">
+
+        {% csrf_token %}
+
+        <input
+            type="file"
+            id="videoInput"
+            name="video"
+            accept="video/*"
+        >
+
+        <br><br>
+
+        <button type="submit" id="processButton">Process Video</button>
+
+    </form>
+
+    <p id="status"></p>
+
+    <video id="resultVideo" controls width="640" style="display: none;">Your browser does not support video playback.</video>
+
+    <script>
+        const videoForm = document.getElementById("videoForm");
+        const videoInput = document.getElementById("videoInput");
+        const processButton = document.getElementById("processButton");
+        const status = document.getElementById("status");
+        const resultVideo = document.getElementById("resultVideo");
+
+        videoForm.addEventListener("submit", async function(event) {
+
+            event.preventDefault();                                                         // Prevent normal form submission                
+
+            if (videoInput.files.length === 0) {                                            // Check if a video was selected
+                status.textContent ="Please select a video first.";
+                return;
+            }
+
+            const videoFile = videoInput.files[0];                                          // Get uploaded video
+            const formData = new FormData();                                                // Create FormData 
+
+            formData.append("video", videoFile);
+
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;   // Get CSRF token
+
+            status.textContent = "Processing video...";                                     // Show status
+
+            processButton.disabled = true;
+
+            try {                                                                           // Send video to Django
+                const response = await fetch("{% url 'video_processing' %}", { 
+                    method: "POST", 
+                    body: formData, 
+                    headers: {"X-CSRFToken": csrfToken} 
+                });
+                    
+                if (!response.ok) {                                                         // Check response
+                    const errorText = await response.text();
+
+                    console.error("Django error:");
+                    console.error("Status:", response.status);
+                    console.error("Response:", errorText);
+
+                    throw new Error("Video processing failed.");
+                }
+
+                const videoBlob = await response.blob();                                    // Get processed video
+                const videoURL = URL.createObjectURL(videoBlob);                            // Create temporary browser URL
+
+                resultVideo.src = videoURL;                                                 // Display processed video
+                resultVideo.style.display = "block";
+
+                status.textContent =
+                    "Video processing complete!";
+
+            } catch (error) {
+                console.error(error);
+
+                status.textContent = "An error occurred while processing the video.";
+            }
+
+            processButton.disabled = false;
+
+        });
+
+    </script>
+
+    {% include "chatframe.html" %}
+    
+</body>
+</html>

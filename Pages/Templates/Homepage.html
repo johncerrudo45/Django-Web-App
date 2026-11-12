@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home Page</title>
+        <link rel="stylesheet" href="{% static 'pages/pagestyle.css' %}">
+    </head>
+
+    <body>
+        <h2 id="header"> Home Page </h2>
+
+        {% include "chatframe.html" %} <!-- add the chatframe html (FROM CHATBOT APP) -->
+
+    </body>
+</html>

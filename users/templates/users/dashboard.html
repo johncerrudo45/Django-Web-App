@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    Hello, {{ user.username|default:"Guest" }}! <br>
+    <hr />
+    {% if user.is_authenticated %}
+    {% include "registration/_logout.html" %}
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'sign_up' %}">Sign up</a>
+    {% endif %}
+    <hr />
+    {% include 'chatframe.html' %} <!-- add the chatframe html (FROM CHATBOT APP) -->
+    
+{% endblock content %}
+
+

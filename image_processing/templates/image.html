@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenCV Image Processor</title>
+</head>
+
+<body>
+
+    <h1> Upload an Image</h1>
+
+    <form 
+        id="imageForm"
+        method="POST" 
+        action="{% url 'upload_image' %}"
+        enctype="multipart/form-data"                    
+    >                                                                               <!-- enctype needed by OpenCV view -->                
+
+        {% csrf_token %}
+
+        <input 
+            type="file"
+            id="imageInput" 
+            name="image" 
+            accept="image/*"
+        >                                                                           <!-- name should be "image"; same with the name in OpenCV view -->
+
+        <button type="submit">Process Image </button>
+
+    </form>
+
+    <h2>Processed Image</h2>
+
+    <img 
+        id="processedImage"
+        style="max-width: 500px;"
+    >
+    
+    <script>
+
+        const form = document.getElementById("imageForm");
+
+        form.addEventListener("submit", async function(event) {
+
+            event.preventDefault();                                                         // Stop the browser from navigating to /process/
+
+            const imageInput = document.getElementById("imageInput");                       // Get the selected image
+                
+            const file = imageInput.files[0];
+
+            if (!file) {                                                                    // Make sure an image was selected
+                alert("Please select an image.");
+                return;
+            }
+
+            const formData = new FormData();                                                // Create form data
+
+            formData.append("image", file);
+
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;  // Get Django CSRF token
+
+            const response = await fetch("{% url 'upload_image' %}", {                     // Send image to Django /process/
+                    method: "POST", 
+                    headers: {"X-CSRFToken": csrfToken},
+                    body: formData
+                }
+            );
+
+            if (!response.ok) {                                                             // Check if Django successfully processed it
+                alert("Image processing failed.");
+                return;
+            }
+
+            const imageBlob = await response.blob();                                        // Get the processed JPEG
+
+            const imageURL = URL.createObjectURL(imageBlob);                                // Create a browser URL for the JPEG
+
+            document.getElementById("processedImage").src = imageURL;                       // Display the processed image
+        });
+
+    </script>
+
+    {% include "chatframe.html" %}
+    
+</body>
+</html>

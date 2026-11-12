@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Login" />
+         <input type="hidden" name="next" value="{% url 'dashboard' %}" /> <!-- line for auto redirecting to dashboard -->
+    </form>
+    <p>
+        <a href="{% url 'dashboard' %}">Back to dashboard</a>
+    </p>
+    <hr />
+    {% include 'chatframe.html' %}
+
+{% endblock content %}

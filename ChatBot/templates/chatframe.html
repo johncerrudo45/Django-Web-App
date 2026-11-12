@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'chatbot/chatbot.css' %}">
+    </head>
+
+    <body>
+        <button id="chat-toggle">Chat</button>
+        <iframe id="chat-frame" src="{% url 'chatbot' %}" title="Chatbot"></iframe>
+
+        <script>
+            const frame = document.getElementById("chat-frame");
+            document.getElementById("chat-toggle").addEventListener("click", function () {
+                frame.hidden = !frame.hidden;
+            });
+        </script>
+    </body>
+</html>

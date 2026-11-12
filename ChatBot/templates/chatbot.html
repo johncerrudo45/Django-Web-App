@@ -1,0 +1,27 @@
+{% load static %}  <!-- required to find files / sets the file path to "static":(?) -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chatbot</title>
+    <link rel="stylesheet" href="{% static 'chatbot/chatbot.css' %}">  <!-- django format of finding filepath -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+
+    {% csrf_token %} <!-- Hidden Stamp?/ linked with csrftoken code in chat.js -->
+    <header>
+        <h1 id="title">AI Chatbot</h1>
+    </header>
+    
+    <section id="chatbot" data-send-url="{% url 'chat' %}"></section> <!-- django format of  -->
+    
+    <div id="chat-form">
+        <textarea id="message" rows="3" cols="80" placeholder="Type your message here..."></textarea>
+        <button id="send">Send</button>
+    </div>
+
+    <script src="{% static 'chatbot/chat.js' %}"></script>
+    
+</body>
+</html>
